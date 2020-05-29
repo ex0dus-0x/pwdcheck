@@ -1,13 +1,12 @@
 package checkup
 
 import (
-    "crypto/sha1"
     "net/http"
+    "io/ioutil"
     "time"
     "strings"
     "strconv"
     "fmt"
-    "encoding/hex"
 )
 
 const (
@@ -21,29 +20,24 @@ const (
 
 // defines API client type for the PwnedPasswords service
 type PwnedClient struct {
-    client *http.Client
+    client http.Client
     baseURL string
 }
 
 type PwnedResp struct {
-    hash string
+    prefix string
     compromised bool
     occurrences int
 }
 
 // instantiates a new client for interaction
-func NewClient() *PwnedClient {
+func NewBreachClient() *PwnedClient {
     return &PwnedClient {
-        client: &http.Client {
+        client: http.Client {
             Timeout: DefaultClientTimeout,
         },
         baseURL: BaseURL,
     }
-}
-
-// override the timeout set for debugging purposes
-func (cl *PwnedClient) SetTimeout(d time.Duration) {
-    cl.client.Timeout = d
 }
 
 // helper to initialize URL for request
@@ -56,37 +50,33 @@ func (cl *PwnedClient) BuildURL(prefix string) string {
 // gets all hash entries from the k-anonymized PwnedPassword dataset by
 // submitting a query of the password SHA hash's prefix, and checks if the
 // original hash is in the resultant queryset.
-func (cl *PwnedClient) BreachCheck(pwd string) (PwnedResp, error) {
-
-    // initialize hasher
-    hasher := sha1.New()
-    hasher.Write([]byte(pwd))
-
-    // get a string formatted hash
-    h := strings.ToUpper(hex.EncodeToString(hasher.Sum(nil)))
+func (cl *PwnedClient) BreachCheck(pwdhash string) (PwnedResp, error) {
 
     // get 5-byte prefix and suffix from our hash
-    prefix := strings.ToUpper(h[:5])
-    suffix := strings.ToUpper(h[5:])
-
-    // create builder
-    req, err := cl.client.NewRequest("GET", cl.BuildURL(prefix), nil)
-    if err != nil {
-        return PwnedResp {}, err
-    }
-
-    // send GET request to API service and error-handle
-    resp, err := cl.client.Do(req)
-    if err != nil {
-        return PwnedResp {}, err
-    }
+    prefix := strings.ToUpper(pwdhash[:5])
+    suffix := strings.ToUpper(pwdhash[5:])
 
     // initialize result to return
     var pwnedResp PwnedResp
-    pwnedResp.hash = string(h)
+
+    // send GET request to API service and error-handle
+    resp, err := cl.client.Get(cl.BuildURL(prefix))
+    if err != nil {
+        return pwnedResp, err
+    }
+    defer resp.Body.Close()
+
+    // read body from response
+    bodyBytes, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return pwnedResp, err
+    }
+
+    bodyString := string(bodyBytes)
+    hashStrings := []string(strings.Split(bodyString, "\n"))
 
     // range each line of the response
-    for _, res := range resp {
+    for _, res := range hashStrings {
 
         // if present, get the number of occurrences too
         if string(res[:35]) == suffix {
@@ -94,11 +84,11 @@ func (cl *PwnedClient) BreachCheck(pwd string) (PwnedResp, error) {
             if err != nil {
                 return PwnedResp {}, err
             }
-
             pwnedResp.compromised = true
             pwnedResp.occurrences += 1
         }
     }
 
+    pwnedResp.prefix = prefix
     return pwnedResp, nil
 }
