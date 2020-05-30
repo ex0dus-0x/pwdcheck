@@ -10,7 +10,6 @@ import (
     "strconv"
 
     "github.com/nbutton23/zxcvbn-go"
-    //"github.com/olekukonko/tablewriter"
 )
 
 // defines the resultant data parsed from the zxcvbn checkup
@@ -86,7 +85,7 @@ func (j PwdJudge) Checkup() (error) {
 }
 
 // generates an output report for display or file writing
-func (j PwdJudge) Output() (*[][]string, error) {
+func (j PwdJudge) MakeOutput() (*[][]string, error) {
 
     // if filepath is set, write and return
     if j.ReportPath != nil {
@@ -101,8 +100,9 @@ func (j PwdJudge) Output() (*[][]string, error) {
     // initialize an output table to render
     data := [][]string{
         []string{"Breach Association", strconv.FormatBool(j.Breach.compromised)},
-        []string{"Password Strength Score", string(j.Strength.score)},
+        []string{"Password Strength Score", strconv.Itoa(j.Strength.score)},
+        []string{"Password Entropy", strconv.FormatFloat(j.Strength.entropy, 'E', -1, 64)},
+        []string{"Time to Crack", j.Strength.ttc},
     }
-
     return &data, nil
 }

@@ -5,8 +5,10 @@ import (
     "fmt"
     "strings"
     "syscall"
+    "os"
 
     "golang.org/x/crypto/ssh/terminal"
+    "github.com/olekukonko/tablewriter"
     "github.com/ex0dus-0x/pwdcheck/checkup"
     //"github.com/ex0dus-0x/pwdcheck/kdf"
 )
@@ -67,13 +69,19 @@ func main() {
     judge.Checkup()
 
     // get output results
-    table, err := judge.Output()
+    outData, err := judge.MakeOutput()
     if err != nil {
         fmt.Errorf("cannot generate output: ", err)
     }
 
     // if table is generated, output it
-    if table != nil {
-        *table.Render()
+    if outData != nil {
+        table := tablewriter.NewWriter(os.Stdout)
+        table.SetHeader([]string{"Checkup", "Status"})
+
+        for _, v := range *outData {
+            table.Append(v)
+        }
+        table.Render()
     }
 }
