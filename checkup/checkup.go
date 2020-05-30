@@ -5,7 +5,6 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
-    "os"
 	"strings"
     "strconv"
 
@@ -48,12 +47,8 @@ func NewJudge(pwd string) *PwdJudge {
 }
 
 // sets a JSON path to generate a final report for the given pwd hash.
-func (j PwdJudge) SetReportPath(report *string) (error) {
-    if _, err := os.Stat(*report); os.IsNotExist(err) {
-        return err
-    }
+func (j PwdJudge) SetReportPath(report *string) {
     j.ReportPath = report
-    return nil
 }
 
 

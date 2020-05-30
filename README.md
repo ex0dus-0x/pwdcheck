@@ -13,10 +13,17 @@ password you want to use, actively judges it against some criteria, and uses a P
 
 The _checkup flow_ contains the following steps:
 
-1. Password Strength - uses the zxcvbn to quantify password strength
-2. Password Breach - checks against PwnedPassword's k-anonymized dataset.
+1. __Breach Association__
+
+Checks against PwnedPassword's k-anonymized dataset.
+
+2. __Password Strength__
+
+Uses the zxcvbn to quantify password strength.
 
 ### Password Derivation Scheme
+
+`pwdcheck` also has the capability to
 
 WIP, but will most likely be using the built-in HKDF support for key generation, using several params:
 
