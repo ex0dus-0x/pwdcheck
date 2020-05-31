@@ -9,8 +9,9 @@ import (
 
     "golang.org/x/crypto/ssh/terminal"
     "github.com/olekukonko/tablewriter"
+
     "github.com/ex0dus-0x/pwdcheck/checkup"
-    //"github.com/ex0dus-0x/pwdcheck/kdf"
+    "github.com/ex0dus-0x/pwdcheck/kdf"
 )
 
 func readPassword() (string, error) {
