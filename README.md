@@ -51,6 +51,10 @@ If such theft-resistant password derivation schemes become more prevalent, attac
 incorporating KDF schemes as part of the credential reuse campaign to derive potential permutations
 of passwords for different services.
 
+### 2. What should I do if `pwdcheck` judges my password poorly?
+
+You should consider the deterministic password manager in order to generate unique and more cryptographically secure passwords and keys for use instead of what you have, especially if you are a big password re-user.
+
 ## License
 
 [MIT License](https://codemuch.tech/license.txt)

@@ -11,7 +11,6 @@ import (
     "github.com/olekukonko/tablewriter"
 
     "github.com/ex0dus-0x/pwdcheck/checkup"
-    "github.com/ex0dus-0x/pwdcheck/kdf"
 )
 
 func readPassword() (string, error) {
@@ -67,7 +66,11 @@ func main() {
     fmt.Println("[*] Judging your password...")
 
     // run the checkup flow
-    judge.Checkup()
+    err := judge.Checkup()
+    if err != nil {
+        fmt.Println("cannot complete checkup flow: ", err)
+        return
+    }
 
     // get output results
     outData, err := judge.MakeOutput()

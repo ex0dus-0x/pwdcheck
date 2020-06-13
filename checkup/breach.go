@@ -11,7 +11,7 @@ import (
 
 const (
     // url endpoint used for API requests
-    BaseURL string = "https://api.pwnedpasswords.com/range/"
+    BaseURL string = "https://api.pwnedpasswords.com/range"
 
     // timeout to wait for before canceling request
     DefaultClientTimeout time.Duration = 30 * time.Second
@@ -73,14 +73,15 @@ func (cl *PwnedClient) BreachCheck(pwdhash string) (PwnedResp, error) {
     }
 
     bodyString := string(bodyBytes)
-    hashStrings := []string(strings.Split(bodyString, "\n"))
 
     // range each line of the response
-    for _, res := range hashStrings {
+    for _, res := range strings.Split(bodyString, "\n") {
 
         // if present, get the number of occurrences too
         if string(res[:35]) == suffix {
-            _ , err = strconv.ParseInt(res[36:], 10, 64)
+
+            breaches := strings.Trim(res[36:], "\r")
+            _ , err = strconv.ParseInt(breaches, 10, 64)
             if err != nil {
                 return PwnedResp {}, err
             }

@@ -22,7 +22,7 @@ type PwdStrength struct {
 // password, it will go through the checkup flow and store the results for
 // user display
 type PwdJudge struct {
-    PwdHash string
+    Pwd string
     ReportPath *string
     Breach PwnedResp
     Strength PwdStrength
@@ -31,15 +31,8 @@ type PwdJudge struct {
 // instantiates a new PwdJudge and initializes the default attributes to be set
 // later on when parsing out results.
 func NewJudge(pwd string) *PwdJudge {
-    // initialize hasher
-    hasher := sha1.New()
-    hasher.Write([]byte(pwd))
-
-    // get a string formatted hash
-    pwdhash := strings.ToUpper(hex.EncodeToString(hasher.Sum(nil)))
-
     return &PwdJudge {
-        PwdHash: pwdhash,
+        Pwd: pwd,
         ReportPath: nil,
         Breach: PwnedResp {},
         Strength: PwdStrength {},
@@ -47,19 +40,29 @@ func NewJudge(pwd string) *PwdJudge {
 }
 
 // sets a JSON path to generate a final report for the given pwd hash.
-func (j PwdJudge) SetReportPath(report *string) {
+func (j *PwdJudge) SetReportPath(report *string) {
     j.ReportPath = report
 }
 
 
 // runs through the checkup flow, and stores results from different
 // steps for later output and consumption.
-func (j PwdJudge) Checkup() (error) {
+func (j *PwdJudge) Checkup() (error) {
+
+    // initialize hasher
+    hasher := sha1.New()
+    _, err := hasher.Write([]byte(j.Pwd))
+    if err != nil {
+        return err
+    }
+
+    // get a string formatted hash
+    pwdhash := strings.ToUpper(hex.EncodeToString(hasher.Sum(nil)))
 
     // Breach Association: check to see if the original password has associated
     // with a known breach
     client := NewBreachClient()
-    resp, err := client.BreachCheck(j.PwdHash)
+    resp, err := client.BreachCheck(pwdhash)
     if err != nil {
         return err
     }
@@ -68,7 +71,7 @@ func (j PwdJudge) Checkup() (error) {
     j.Breach = resp
 
     // Password Strength: use zxcvbn to quantify strength attributes
-    passwordStrength := zxcvbn.PasswordStrength(j.PwdHash, nil)
+    passwordStrength := zxcvbn.PasswordStrength(j.Pwd, nil)
 
     // initialize PwdStrength struct
     j.Strength = PwdStrength {
@@ -80,7 +83,7 @@ func (j PwdJudge) Checkup() (error) {
 }
 
 // generates an output report for display or file writing
-func (j PwdJudge) MakeOutput() (*[][]string, error) {
+func (j *PwdJudge) MakeOutput() (*[][]string, error) {
 
     // if filepath is set, write and return
     if j.ReportPath != nil {
@@ -95,7 +98,7 @@ func (j PwdJudge) MakeOutput() (*[][]string, error) {
     // initialize an output table to render
     data := [][]string{
         []string{"Breach Association", strconv.FormatBool(j.Breach.compromised)},
-        []string{"Password Strength Score", strconv.Itoa(j.Strength.score)},
+        []string{"Password Strength Score", strings.Repeat("*", j.Strength.score)},
         []string{"Password Entropy", strconv.FormatFloat(j.Strength.entropy, 'E', -1, 64)},
         []string{"Time to Crack", j.Strength.ttc},
     }
