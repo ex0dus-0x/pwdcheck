@@ -18,6 +18,14 @@ type PwdStrength struct {
     ttc string
 }
 
+// defines the resultant data parsed from a simple sanity check
+// given a plaintext password
+type SanityCheck struct {
+    ShortLen bool
+    CommonWords bool
+    BasicAlphaNum bool
+}
+
 // main interface struct for judging password choices. Given a plaintext
 // password, it will go through the checkup flow and store the results for
 // user display
@@ -25,6 +33,7 @@ type PwdJudge struct {
     Pwd string
     ReportPath *string
     Breach PwnedResp
+    Sanity SanityCheck
     Strength PwdStrength
 }
 
@@ -35,6 +44,7 @@ func NewJudge(pwd string) *PwdJudge {
         Pwd: pwd,
         ReportPath: nil,
         Breach: PwnedResp {},
+        Sanity: SanityCheck {},
         Strength: PwdStrength {},
     }
 }
@@ -49,7 +59,14 @@ func (j *PwdJudge) SetReportPath(report *string) {
 // steps for later output and consumption.
 func (j *PwdJudge) Checkup() (error) {
 
-    // initialize hasher
+    // perform initial sanity check on password cleartext
+    j.Sanity = SanityCheck {
+        ShortLen: shortlen,
+        CommonWords: commonwords,
+        BasicAlphaNum: alphanum
+    }
+
+    // initialize hasher to generate a hash for breach association
     hasher := sha1.New()
     _, err := hasher.Write([]byte(j.Pwd))
     if err != nil {

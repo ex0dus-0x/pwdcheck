@@ -1,11 +1,10 @@
 # pwdcheck
 
-small utility that criticizes your password choices (for the sake of security!)
+Small command-line utility (and hopefully browser plugin)  that criticizes your password choices (for the sake of security!)
 
 ## Introduction
 
-`pwdcheck` is an opinionated password checkup utility and generator that consumes a potential
-password you want to use, actively judges it against some criteria, and uses a Pwdhhash-inspired deterministic password generation scheme to create a unique and secure password you can use (TODO: automate the input process into forms, like PwdHash does).
+`pwdcheck` is an opinionated password checkup utility and generator that consumes a potential password you want to use, actively judges it against some criteria, and uses a Pwdhhash-inspired deterministic password generation scheme to create a unique and secure password you can use (TODO: automate the input process into forms, like PwdHash does).
 
 ## Design
 
@@ -20,7 +19,7 @@ a large combination list. Passwords that are associated should be rejected as ch
 
 2. __Password Strength__
 
-Uses the zxcvbn to quantify password strength.
+Uses the zxcvbn to quantify password strength, which provides a
 
 (TODO)
 

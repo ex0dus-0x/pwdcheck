@@ -13,7 +13,7 @@ import (
     "github.com/ex0dus-0x/pwdcheck/checkup"
 )
 
-func readPassword() (string, error) {
+func ReadPassword() (string, error) {
 
     // read password without displaying chars
     pwd, err := terminal.ReadPassword(int(syscall.Stdin))
@@ -50,7 +50,7 @@ func main() {
 
         // read buffered input string and error check
         var err error
-        pwd, err = readPassword()
+        pwd, err = ReadPassword()
         if err != nil {
             fmt.Errorf("cannot read input password: ", err)
         }
@@ -68,8 +68,7 @@ func main() {
     // run the checkup flow
     err := judge.Checkup()
     if err != nil {
-        fmt.Println("cannot complete checkup flow: ", err)
-        return
+        fmt.Errorf("cannot complete checkup flow: ", err)
     }
 
     // get output results
