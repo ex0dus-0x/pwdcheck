@@ -1,14 +1,17 @@
 # pwdcheck
 
-Small command-line utility (and hopefully browser plugin)  that criticizes your password choices (for the sake of security!)
+Small command-line utility (and hopefully browser plugin) that criticizes your password choices (for the sake of security!)
 
 ## Introduction
 
-`pwdcheck` is an opinionated password checkup utility and generator that consumes a potential password you want to use, actively judges it against some criteria, and uses a Pwdhhash-inspired deterministic password generation scheme to create a unique and secure password you can use (TODO: automate the input process into forms, like PwdHash does).
+`pwdcheck` is an opinionated password checkup utility and generator that consumes a potential password you want to use, actively judges it against some criteria, and generates statistics from that criteria set, and outputs them for your consumption.
 
-## Design
+### Use Cases
 
-### Checkup Flow
+* Password strength checking for mission-critical webapps
+* Data analysis on breached credential datasets
+
+## Checkup Flow
 
 The _checkup flow_ contains the following steps:
 
@@ -17,17 +20,13 @@ The _checkup flow_ contains the following steps:
 Checks against PwnedPassword's k-anonymized dataset in order to determine if the credential is potentially as part of
 a large combination list. Passwords that are associated should be rejected as choices for key generation (see __Questions__).
 
+2. __Sanity Check__
+
+Applies rudimentary checks against a cleartext string, in order to determine if there are already any questionable patterns existing.
+
 2. __Password Strength__
 
-Uses the zxcvbn to quantify password strength, which provides a
-
-(TODO)
-
-### Password Derivation Scheme
-
-`pwdcheck` also has the capability to determinstically generate passwords given an original secret password and the domain name being authenticated against. This is largely inspired by Stanford's [PwdHash](https://pwdhash.github.io/website/), which is a browser plugin that can create theft-resistant passwords while remaining memory-less.
-
-A browser plugin that calls back to the original Go implementation will be released in order to better model functionality like Pwdhash and any other deterministic password generation schemes, while the CLI will be mostly used as a Proof-Of-Concept or reference implementation.
+Uses the zxcvbn to quantify password strength, which provides an insight given its own strength algorithm.
 
 ## Usage
 
