@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"strings"
     "strconv"
+    "regexp"
 
     "github.com/nbutton23/zxcvbn-go"
 )
@@ -59,11 +60,27 @@ func (j *PwdJudge) SetReportPath(report *string) {
 // steps for later output and consumption.
 func (j *PwdJudge) Checkup() (error) {
 
+    // basic sanity check: cleartext pwd is min 8 chars
+    shortlen := false
+    if len(j.Pwd) < 8 {
+        shortlen = true
+    }
+
+    // basic sanity check: only contains alphanumeric chars
+    alphanum := false
+    re := regexp.MustCompile("^[a-zA-Z0-9]*$")
+    if re.MatchString(j.Pwd) {
+        alphanum = true
+    }
+
+    // TODO: basic sanity check: does not contain common words
+    commonwords := false
+
     // perform initial sanity check on password cleartext
     j.Sanity = SanityCheck {
         ShortLen: shortlen,
         CommonWords: commonwords,
-        BasicAlphaNum: alphanum
+        BasicAlphaNum: alphanum,
     }
 
     // initialize hasher to generate a hash for breach association
