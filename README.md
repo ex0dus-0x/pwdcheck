@@ -1,12 +1,14 @@
 # pwdcheck
 
-Small command-line utility (and hopefully browser plugin) that criticizes your password choices (for the sake of security!)
+Small utility that criticizes your password choices (for the sake of security!)
 
 ## Introduction
 
 `pwdcheck` is an opinionated password checkup utility and generator that consumes a potential password you want to use, actively judges it against some criteria, and generates statistics from that criteria set, and outputs them for your consumption.
 
 ### Use Cases
+
+__NOTE__: this is not super serious software! Just represents some experimenting around when learning more about modern password breach mitigations.
 
 * Password strength checking for mission-critical webapps
 * Data analysis on breached credential datasets
@@ -51,7 +53,7 @@ of passwords for different services.
 
 ### 2. What should I do if `pwdcheck` judges my password poorly?
 
-You should consider the deterministic password manager in order to generate unique and more cryptographically secure passwords and keys for use instead of what you have, especially if you are a big password re-user.
+You should consider a service that may incorporate a deterministic password generator in order to generate unique and more cryptographically secure passwords and keys for use instead of what you have, especially if you are a big password re-user.
 
 ## License
 

@@ -1,4 +1,4 @@
-package checkup
+package main
 
 import (
     "io/ioutil"

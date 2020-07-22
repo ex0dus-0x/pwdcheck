@@ -9,8 +9,6 @@ import (
 
     "golang.org/x/crypto/ssh/terminal"
     "github.com/olekukonko/tablewriter"
-
-    "github.com/ex0dus-0x/pwdcheck/checkup"
 )
 
 func ReadPassword() (string, error) {
@@ -58,7 +56,7 @@ func main() {
     }
 
     // initialize a PwdJudge to pass upon judgement
-    judge := checkup.NewJudge(pwd)
+    judge := NewJudge(pwd)
     if *reportPath != "" {
         judge.SetReportPath(reportPath)
     }
